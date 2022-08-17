@@ -19,7 +19,7 @@ function App() {
     <div>
       <Header as='h2' icon='users' content='Reactivities' />
         <div>this is before reading from database</div>
-        <List>
+        <List> 
         {
             activities.map((activity:any) =>(
               <List.Item key={activity.id}>
