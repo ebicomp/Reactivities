@@ -16,6 +16,7 @@ using Persistence;
 using MediatR;
 using Application.Activities;
 using Application.Core;
+using API.Extensions;
 
 namespace API
 {
@@ -34,26 +35,7 @@ namespace API
         {
 
             services.AddControllers();
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "WebAPIv5", Version = "v1" });
-            });
-
-            services.AddDbContext<DataContext>(options =>
-            {
-                options.UseSqlite(_config.GetConnectionString("DefaultConnection"));
-            });
-
-            services.AddCors(opt =>
-            {
-                opt.AddPolicy("CorsPolicy", policy =>
-                {
-                    // policy.AllowAnyMethod().AllowAnyHeader().WithOrigins("http://localhost:10075");
-                    policy.AllowAnyMethod().AllowAnyHeader().AllowAnyOrigin();
-                });
-            });
-            services.AddMediatR(typeof(List.Handler).Assembly);
-            services.AddAutoMapper(typeof(MappingProfiles).Assembly);
+            services.AddApplicationServices(_config);
 
         }
 
