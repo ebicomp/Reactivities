@@ -6,8 +6,9 @@ interface Props{
     activities:Activity[];
     selectActivity:(id:string) =>void;
     deleteActivity:(id:string) =>void;
+    submiting:boolean;
 }
-const ActivityList = ({activities, selectActivity,deleteActivity}:Props) => {
+const ActivityList = ({activities, selectActivity,deleteActivity,submiting}:Props) => {
     return (
         <Segment>
             <Item.Group divided>
@@ -23,7 +24,7 @@ const ActivityList = ({activities, selectActivity,deleteActivity}:Props) => {
                                 </Item.Description>
                                 <Item.Extra>
                                     <Button floated='right' content='View' color='blue' onClick={()=>selectActivity(activity.id)} />
-                                    <Button floated='right' content='Delete' color='red' onClick={()=>deleteActivity(activity.id)} />
+                                    <Button loading={submiting} floated='right' content='Delete' color='red' onClick={()=>deleteActivity(activity.id)} />
                                     <Label basic content={activity.category} />
                                 </Item.Extra>
                             </Item.Content>
