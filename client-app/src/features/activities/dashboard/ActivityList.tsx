@@ -1,19 +1,18 @@
+import { observer } from 'mobx-react-lite';
 import React from 'react';
 import { Button, Item, Label, Segment } from 'semantic-ui-react';
 import { Activity } from '../../../app/models/activity';
+import { useStore } from '../../../app/stores/store';
 
-interface Props{
-    activities:Activity[];
-    selectActivity:(id:string) =>void;
-    deleteActivity:(id:string) =>void;
-    submiting:boolean;
-}
-const ActivityList = ({activities, selectActivity,deleteActivity,submiting}:Props) => {
+
+const ActivityList = () => {
+    const {activityStore} = useStore();
+    const {loading ,deleteActivity , selectActivity , actvitiesByDate }= activityStore;
     return (
         <Segment>
             <Item.Group divided>
                 {
-                    activities.map(activity => (
+                    actvitiesByDate.map(activity => (
                         <Item key={activity.id}>
                             <Item.Content>
                                 <Item.Header as='a'>{activity.title}</Item.Header>
@@ -24,7 +23,7 @@ const ActivityList = ({activities, selectActivity,deleteActivity,submiting}:Prop
                                 </Item.Description>
                                 <Item.Extra>
                                     <Button floated='right' content='View' color='blue' onClick={()=>selectActivity(activity.id)} />
-                                    <Button loading={submiting} floated='right' content='Delete' color='red' onClick={()=>deleteActivity(activity.id)} />
+                                    <Button loading={loading} floated='right' content='Delete' color='red' onClick={()=>deleteActivity(activity.id)} />
                                     <Label basic content={activity.category} />
                                 </Item.Extra>
                             </Item.Content>
@@ -38,4 +37,4 @@ const ActivityList = ({activities, selectActivity,deleteActivity,submiting}:Prop
 
 
 
-export default ActivityList;
+export default observer(ActivityList);
