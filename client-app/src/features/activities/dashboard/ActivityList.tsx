@@ -1,13 +1,13 @@
+
 import { observer } from 'mobx-react-lite';
-import React from 'react';
+import { Link } from 'react-router-dom';
 import { Button, Item, Label, Segment } from 'semantic-ui-react';
-import { Activity } from '../../../app/models/activity';
 import { useStore } from '../../../app/stores/store';
 
 
 const ActivityList = () => {
     const {activityStore} = useStore();
-    const {loading ,deleteActivity , selectActivity , actvitiesByDate }= activityStore;
+    const {loading ,deleteActivity  , actvitiesByDate }= activityStore;
     return (
         <Segment>
             <Item.Group divided>
@@ -22,7 +22,7 @@ const ActivityList = () => {
                                 <div>{activity.city}, {activity.venue}</div>
                                 </Item.Description>
                                 <Item.Extra>
-                                    <Button floated='right' content='View' color='blue' onClick={()=>selectActivity(activity.id)} />
+                                    <Button as={Link} to={`/activities/${activity.id}`} floated='right' content='View' color='blue' />
                                     <Button loading={loading} floated='right' content='Delete' color='red' onClick={()=>deleteActivity(activity.id)} />
                                     <Label basic content={activity.category} />
                                 </Item.Extra>

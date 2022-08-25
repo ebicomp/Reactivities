@@ -21,8 +21,7 @@ export default class ActivityStore{
             const activities = await agent.Activities.list();
 
             activities.forEach(activity=>{
-                activity.date = activity.date.split('T')[0];
-                this.ActivityRegistry.set(activity.id,activity);
+                this.setActivity(activity);
             });
             this.setLoadingInitial(false);
 
@@ -32,7 +31,33 @@ export default class ActivityStore{
             this.setLoadingInitial(false);
          }
     }
-
+    
+    loadActivity = async(id:string)=>{
+        let activity = this.getActivity(id);
+        if(activity){
+            this.selectedActivity = activity;
+        }
+        else{
+            this.loadingInitial = true;
+            try{
+                activity = await agent.Activities.detail(id);
+                this.setActivity(activity);
+                this.setLoadingInitial(false);
+            }
+            catch(error){
+                console.log(error);
+                this.setLoadingInitial(false);
+            }
+        }
+        
+    }
+    private getActivity = (id:string)=>{
+        return this.ActivityRegistry.get(id);
+    }
+    private setActivity = (activity:Activity)=>{
+        activity.date = activity.date.split('T')[0];
+        this.ActivityRegistry.set(activity.id,activity);
+    }
     get actvitiesByDate(){
         return Array.from(this.ActivityRegistry.values())
         .sort((a,b)=> Date.parse(a.date)- Date.parse(b.date))
@@ -41,21 +66,21 @@ export default class ActivityStore{
     setLoadingInitial=(state:boolean)=>{
         this.loadingInitial = state;
     }
-    selectActivity=(id:string)=>{
-        this.selectedActivity = this.ActivityRegistry.get(id);
-    }
-    cancelSelectedActivity = () =>{
-        this.selectedActivity = undefined;
-    }
-    openForm = (id?:string) =>{
+    // selectActivity=(id:string)=>{
+    //     this.selectedActivity = this.ActivityRegistry.get(id);
+    // }
+    // cancelSelectedActivity = () =>{
+    //     this.selectedActivity = undefined;
+    // }
+    // openForm = (id?:string) =>{
 
-        id? this.selectActivity(id): this.cancelSelectedActivity();
-        this.editMode = true;
+    //     id? this.selectActivity(id): this.cancelSelectedActivity();
+    //     this.editMode = true;
 
-    }
-    closeForm = () =>{
-        this.editMode = false;
-    }
+    // }
+    // closeForm = () =>{
+    //     this.editMode = false;
+    // }
     createActivity= async(activity:Activity) =>{
         this.loading = true;
         activity.id = uuid();
