@@ -18,7 +18,6 @@ const ActivityDashboard = () => {
       
         
         if(activityStore.loadingInitial) return <LoadingComponent content='Loading App'/>
-        const {selectedActivity,editMode } = activityStore;
     return (
         <Grid>
             <Grid.Column width='10'>

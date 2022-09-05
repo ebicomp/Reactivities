@@ -1,18 +1,22 @@
 import { observer } from 'mobx-react-lite';
-import React, { ChangeEvent, useState } from 'react';
+import React, { ChangeEvent, useEffect, useState } from 'react';
+import { Link, useParams } from 'react-router-dom';
 import { Button, Form, Segment } from 'semantic-ui-react';
+import agent from '../../../app/api/agent';
+import LoadingComponent from '../../../app/layout/LoadingComponent';
 import { Activity } from '../../../app/models/activity';
 import { useStore } from '../../../app/stores/store';
-
+import {v4 as uuid} from 'uuid';
+import { useNavigate } from "react-router-dom";
 
 
 const ActivityForm = () => {
 
     const {activityStore} = useStore();
-    const {selectedActivity,createActivity, updateActivity,loading} = activityStore;
-    
+    const {selectedActivity,createActivity, updateActivity,loading , loadActivity,loadingInitial} = activityStore;
+    const navigate = useNavigate();
 
-    const initialState = selectedActivity?? {
+    const [activity, setActivity] = useState({
         id:'',
         city:'',
         date:'',
@@ -20,12 +24,33 @@ const ActivityForm = () => {
         title:'',
         venue:'',
         category:''
-    };
+    });
 
-    const [activity, setActivity] = useState(initialState);
+    const {id} = useParams<string>();
+    useEffect(()=>{
+
+
+        if(id) loadActivity(id).then(activity=>{
+            setActivity(activity!);
+        });
+
+
+    } , [id,loadActivity]);
 
     const handleSubmit = () =>{
-        activity.id ? updateActivity(activity): createActivity(activity);
+        if(activity.id.length === 0){
+            let newActivity = {
+                ...activity,
+                id:uuid()
+            }
+            createActivity(newActivity).then(()=>{
+                navigate(`/activities/${newActivity.id}`);
+            });
+        }
+        else{
+            updateActivity(activity).then(()=>{navigate(`/activities/${activity.id}`);});
+        }
+
     }
     const handleInputChange = (event:ChangeEvent<HTMLInputElement| HTMLTextAreaElement>)=>{
         const {name , value} = event.target;
@@ -34,6 +59,8 @@ const ActivityForm = () => {
             [name]:value
         });
     }
+
+    if(loadingInitial) return <LoadingComponent content='loading activity ...' />
     return (
         <Segment clearing>
             <Form onSubmit={handleSubmit} autoComplete='off'>
@@ -44,7 +71,7 @@ const ActivityForm = () => {
                 <Form.Input placeholder='City' value={activity.city} name='city' onChange={handleInputChange}/>
                 <Form.Input placeholder='Venue' value={activity.venue} name='venue' onChange={handleInputChange}/>
                 <Button loading={loading} type='submit' floated='right' positive content='Submit' />
-                <Button type='button' floated='right' content='Cancel' />
+                <Button type='button' as={Link} to='/activities'  floated='right' content='Cancel' />
             </Form>
         </Segment>
     );
