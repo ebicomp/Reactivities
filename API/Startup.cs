@@ -17,6 +17,7 @@ using MediatR;
 using Application.Activities;
 using Application.Core;
 using API.Extensions;
+using FluentValidation.AspNetCore;
 
 namespace API
 {
@@ -34,9 +35,12 @@ namespace API
         public void ConfigureServices(IServiceCollection services)
         {
 
-            services.AddControllers();
+            services.AddControllers().AddFluentValidation(config =>
+            {
+                config.RegisterValidatorsFromAssemblyContaining<Create>();
+            });
             services.AddApplicationServices(_config);
-            
+
 
         }
 
